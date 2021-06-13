@@ -25,12 +25,38 @@ app = web.Applicalion(
 ### Decorator
 
 ```python3
+import time
+from aioservicetiming import server_timing
 
+@server_timing(
+    name='test_function'
+)  # you can specify both timer name and description
+def test1():
+    time.sleep(1)
+
+@server_timing  # if you do not specify timer name than name of function
+                # will be used for timer name
+def test2():
+    time.sleep(2)
 ```
 
 ### Context manager
 
 ```python3
+from asyncio import sleep
+
+from aiohttp import web
+from aioservertiming import server_timing_cm
+
+
+async def handler(request: web.Request) -> web.Response:
+    with server_timing_cm('test1'):  # name must be specified!
+        sleep(0.1)
+    with server_timing_cm(
+        'test2', 'testtimerno2'  # you can specify a description for timer
+    ):
+        sleep(0.5)
+    return web.Response()
 
 ```
 
