@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -15,8 +16,8 @@ server_timings = ContextVar("timings")
 class Timer:
 
     name: str
-    description: str = None
-    duration: int = 0
+    description: Optional[str] = None
+    duration: float = 0
 
     __stopped = False
 
@@ -24,10 +25,11 @@ class Timer:
         self.__start = time.time()
 
     def stop(self):
-        if self.is_stopped():
-            raise RuntimeError("Attempt to  stop a timer in a second time")
+        if self.is_stopped:
+            raise RuntimeError("Timer is already stopped")
         self.duration = time.time() - self.__start
 
+    @property
     def is_stopped(self):
         return self.__stopped
 
@@ -54,7 +56,7 @@ class Timer:
 async def server_timing_mware(
     request: web.Request,
     handler: Handler
-) -> web.Response:
+) -> web.StreamResponse:
     server_timings.set([])
     response = await handler(request)
     raw_timings = server_timings.get()
@@ -65,10 +67,10 @@ async def server_timing_mware(
 
 
 @contextmanager
-def server_timing_cm(name: str, description: str = None):
+def server_timing_cm(name: str, description: Optional[str] = None):
     timings = server_timings.get()
     if timings and not timings[-1].is_stopped():
-        raise RuntimeError("nested server timers")
+        raise RuntimeError("Nested server timers")
     timer = Timer(name=name, description=description)
     timings.append(timer)
     timer.start()
@@ -78,7 +80,7 @@ def server_timing_cm(name: str, description: str = None):
         timer.stop()
 
 
-def server_timing(name: str = None, description: str = None):
+def server_timing(name: Optional[str] = None, description: Optional[str] = None):
 
     def wrapper(fn):
         if not name:
