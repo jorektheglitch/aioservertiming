@@ -9,6 +9,8 @@ from aiohttp import web
 from aiohttp.web_middlewares import _Handler as Handler
 
 
+__version__ = "0.0.1a1"
+
 server_timings = ContextVar("timings")
 
 

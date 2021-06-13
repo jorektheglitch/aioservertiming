@@ -1,11 +1,14 @@
 import setuptools
 
+from aioservertiming import __version__
+
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="aioservertiming",
-    version="0.0.1a1",
+    version=__version__,
     author="jorektheglitch",
     author_email="jorektheglitch@yandex.ru",
     description="Server Timing interaction for aiohttp",
