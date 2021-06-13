@@ -1,5 +1,8 @@
 # aioservertiming
 
+[![PyPi Package Version](https://img.shields.io/pypi/v/aioservertiming.svg)](https://pypi.python.org/pypi/aioservertiming)
+[![Supported python versions](https://img.shields.io/pypi/pyversions/aioservertiming.svg)](https://pypi.python.org/pypi/aioservertiming)
+
 The *Server-Timing* header communicates one or more metrics and descriptions for a given request-response cycle. It is used to surface any backend server timing metrics (e.g. database read/write, CPU time, file system access, etc.) in the developer tools in the user's browser or in the [PerformanceServerTiming](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceServerTiming) interface. *aioservertiming* provides conventient functions to work with it from aiohttp.
 
 ## Installation
@@ -19,7 +22,8 @@ from aioservertiming import server_timing_mware
 app = web.Applicalion(
     middlewares = [
         server_timing_mware
-    ])
+    ]
+)
 ```
 
 ### Decorator
@@ -28,9 +32,8 @@ app = web.Applicalion(
 import time
 from aioservertiming import server_timing
 
-@server_timing(
-    name='test_function'
-)  # you can specify both timer name and description
+# you can specify both timer name and description
+@server_timing(name='test_function')
 def test1():
     time.sleep(1)
 
@@ -50,14 +53,14 @@ from aioservertiming import server_timing_cm
 
 
 async def handler(request: web.Request) -> web.Response:
-    with server_timing_cm('test1'):  # name must be specified!
-        sleep(0.1)
-    with server_timing_cm(
-        'test2', 'testtimerno2'  # you can specify a description for timer
-    ):
-        sleep(0.5)
+    # timer name must be specified!
+    with server_timing_cm('test1'):
+        await sleep(0.1)
+        
+    # you can specify a description for timer
+    with server_timing_cm(name='test2', description='testtimerno2'):
+        await sleep(0.5)
     return web.Response()
-
 ```
 
 ## Links
