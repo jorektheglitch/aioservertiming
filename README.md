@@ -26,7 +26,7 @@ app = web.Applicalion(
 
 ```python3
 import time
-from aioservicetiming import server_timing
+from aioservertiming import server_timing
 
 @server_timing(
     name='test_function'
